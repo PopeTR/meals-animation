@@ -19,34 +19,50 @@ class MealDetailsScreen extends ConsumerWidget {
       appBar: AppBar(
         actions: [
           IconButton(
-              onPressed: () {
-                // we read only in a function like onPressed
-                // notifier gives us access to the notifier class we set up
-                // when read has returned the results we can then use the toggle method in the class
-                final wasAdded = ref
-                    .read(favouritesProvider.notifier)
-                    .toggleMealFavouriteStatus(meal);
-                // This came from our Snackbar method in tabs which we can now put more accurately on the Meal Details page.
-                // The message we display can be determined by the return of the toggleMealFavourite, so we can adjust the return to be a boolean
-                ScaffoldMessenger.of(context).clearSnackBars();
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text(wasAdded
-                        ? 'Meal Added as favourite'
-                        : 'Meal removed')));
+            onPressed: () {
+              // we read only in a function like onPressed
+              // notifier gives us access to the notifier class we set up
+              // when read has returned the results we can then use the toggle method in the class
+              final wasAdded = ref
+                  .read(favouritesProvider.notifier)
+                  .toggleMealFavouriteStatus(meal);
+              // This came from our Snackbar method in tabs which we can now put more accurately on the Meal Details page.
+              // The message we display can be determined by the return of the toggleMealFavourite, so we can adjust the return to be a boolean
+              ScaffoldMessenger.of(context).clearSnackBars();
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Text(
+                      wasAdded ? 'Meal Added as favourite' : 'Meal removed')));
+            },
+            // AnimatedSwitcher is an implicit animation widget that allows you to move from one icon to another
+            icon: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 300),
+              transitionBuilder: (child, animation) {
+                return RotationTransition(
+                  // You can use the built in animation features (0 to 1) or you can set yourself a Tween
+                  // We explicitly tell Tween the values we are giving it because we are using 0.8 and 1 not 1.0
+                  turns: Tween<double>(begin: 0.8, end: 1).animate(animation),
+                  child: child,
+                );
               },
-              icon: isFavourite
-                  ? const Icon(Icons.star)
-                  : const Icon(Icons.star_border))
+              // We must add a key because the animation picks up that the icon data is different even though the same widget
+              child: Icon(isFavourite ? Icons.star : Icons.star_border,
+                  key: ValueKey(isFavourite)),
+            ),
+          )
         ],
         title: Text(meal.title),
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Image.network(
-              meal.imageUrl,
-              width: double.infinity,
-              fit: BoxFit.cover,
+            // This links the image on the meals screen and animates the image to move from one screen to another
+            Hero(
+              tag: meal.id,
+              child: Image.network(
+                meal.imageUrl,
+                width: double.infinity,
+                fit: BoxFit.cover,
+              ),
             ),
             const SizedBox(
               height: 14,

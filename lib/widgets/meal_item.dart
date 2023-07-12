@@ -33,13 +33,17 @@ class MealItem extends StatelessWidget {
         child: Stack(
           // Stack children we start with the one on the back, and work our way forward
           children: [
-            // Fade in animation thats smooth
-            FadeInImage(
-                placeholder: MemoryImage(kTransparentImage),
-                image: NetworkImage(meal.imageUrl),
-                fit: BoxFit.cover,
-                height: 200,
-                width: double.infinity),
+            // Widget to animate widgets across different screens
+            Hero(
+              tag: meal.id,
+              // Fade in animation thats smooth
+              child: FadeInImage(
+                  placeholder: MemoryImage(kTransparentImage),
+                  image: NetworkImage(meal.imageUrl),
+                  fit: BoxFit.cover,
+                  height: 200,
+                  width: double.infinity),
+            ),
 
             // Positioned is the absolute/relative example so you can add top, bottom, left properties
             Positioned(
